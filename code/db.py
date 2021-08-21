@@ -1,12 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.engine.base import Engine
 
-import datetime as dt
-
 from pandasql import sqldf
-
-import pandas as pd
-import unidecode as ud
 
 def create_connection_postgre(
     server: str,
@@ -21,11 +16,35 @@ def create_connection_postgre(
     return sa.create_engine(conn)
 
 
+def create_database(
+    connection: Engine,
+    database_name: str
+) -> bool:
+    
+    query = f"""
+        create database
+            {database_name}
+        with
+            encoding = 'UTF8'
+    """
+
+    try:
+        connection.execute(
+            object=query
+        )
+
+        return True
+
+    except:
+        return False
+
+
 def table_exists(
-    connection,
-    schema_name,
-    table_name
-):
+    connection: Engine,
+    schema_name: str,
+    table_name: str
+) -> bool:
+
     query = f"""
         select to_regclass('{schema_name}.{table_name}');
     """
